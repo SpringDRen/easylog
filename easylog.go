@@ -31,7 +31,7 @@ var (
 	console     *log.Logger
 	logger      *log.Logger
 	currentFile *os.File
-	levelFlag   int
+	levelFlag   = LevelDebug
 	dateFormat  = "2006-01-02 15:04:05.999"
 	initFlag    = false
 )
@@ -58,7 +58,7 @@ func Error(v ...interface{}) {
 }
 
 func baseOutput(loglevel string, v ...interface{}) {
-	if OutputAll&outputFlag != 0 {
+	if OutputAll&outputFlag != 0 || !initFlag {
 		now := time.Now()
 		msg := fmt.Sprintln(v...)
 
@@ -77,13 +77,18 @@ func baseOutput(loglevel string, v ...interface{}) {
 
 		timeStr := now.Format(dateFormat)
 
-		if OutputConsole&outputFlag != 0 {
-			console.Printf("%s [%-5s] %s:%d: %s",
+		if initFlag {
+			if OutputConsole&outputFlag != 0 {
+				console.Printf("%-23s [%-5s] %s:%d: %s",
+					timeStr, loglevel, fileName, line, msg)
+			}
+			if OutputFile&outputFlag != 0 {
+				logger.Printf("%-23s [%-5s] %s:%d: %s",
+					timeStr, loglevel, moduleAndFileName, line, msg)
+			}
+		} else {
+			fmt.Printf("%-23s [%-5s] %s:%d: %s",
 				timeStr, loglevel, fileName, line, msg)
-		}
-		if OutputFile&outputFlag != 0 {
-			logger.Printf("%s [%-5s] %s:%d: %s",
-				timeStr, loglevel, moduleAndFileName, line, msg)
 		}
 	}
 }
