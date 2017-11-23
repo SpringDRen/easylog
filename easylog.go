@@ -141,7 +141,7 @@ func InitFile(flag int, level int, dir string, fileName string) error {
 	}
 
 	logPath := dir + fileName
-	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_RDONLY|os.O_APPEND, 0666)
+	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		initFlag = false
 		return fmt.Errorf("logfile err, %v \n", err)
